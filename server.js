@@ -5,6 +5,7 @@ import foodRouter from "./routes/foodRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import dotenv from "dotenv"
 import cartRoutes from "./routes/cartRoutes.js";
+import { orderRouter } from "./routes/orderRoutes.js";
 
 
 //app config
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 app.use("/api/food",foodRouter)
 app.use("/api/Auth",authRouter)
 app.use("/api/cart",cartRoutes)
+app.use("/api/place",orderRouter)
 app.use("/images",express.static("uploads"))
 
 app.listen(port, () => {
