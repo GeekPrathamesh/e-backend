@@ -1,9 +1,10 @@
+import dotenv from "dotenv"
+dotenv.config();
 import express from "express"
 import cors from "cors"
 import { connectDB } from "./config/db.js";
 import foodRouter from "./routes/foodRoutes.js";
 import authRouter from "./routes/authRoutes.js";
-import dotenv from "dotenv"
 import cartRoutes from "./routes/cartRoutes.js";
 import { orderRouter } from "./routes/orderRoutes.js";
 
@@ -11,7 +12,7 @@ import { orderRouter } from "./routes/orderRoutes.js";
 //app config
 const app=express();
 const port = 4000;
-dotenv.config();
+
 
 //database connection
 connectDB()
@@ -27,7 +28,7 @@ app.get('/', (req, res) => {
 app.use("/api/food",foodRouter)
 app.use("/api/Auth",authRouter)
 app.use("/api/cart",cartRoutes)
-app.use("/api/place",orderRouter)
+app.use("/api/order",orderRouter)
 app.use("/images",express.static("uploads"))
 
 app.listen(port, () => {

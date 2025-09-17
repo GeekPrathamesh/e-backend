@@ -1,7 +1,10 @@
 import express from "express";
-import { orderPlace } from "../controllers/ordercontroller.js";
+import { orderPlace, verifyOrder } from "../controllers/ordercontroller.js";
+import { authMiddleware } from "../middleware/auth.js";
+
 const orderRouter = express.Router()
 
-orderRouter.post("/order",orderPlace);
+orderRouter.post("/place",authMiddleware,orderPlace);
+orderRouter.post("/verify",verifyOrder);
 
 export {orderRouter}
