@@ -52,20 +52,96 @@ const orderPlace = async (req, res) => {
   }
 };
 
-const verifyOrder=async(req,res)=>{
-const {orderId,success}=req.body;
-try {
-  if(success== "true"){
-    await orderModel.findByIdAndUpdate(orderId,{payment:true});
-    res.json({success:true,message:"paid"})
+const verifyOrder = async (req, res) => {
+  const { orderId, success } = req.body;
+  try {
+    if (success == "true") {
+      await orderModel.findByIdAndUpdate(orderId, { payment: true });
+      res.json({ success: true, message: "paid" });
+    } else {
+      await orderModel.findByIdAndDelete(orderId);
+      res.json({ success: false, message: "unpaid" });
+    }
+  } catch (error) {
+    res.json({ success: false, message: "error" });
   }
-  else{
-    await orderModel.findByIdAndDelete(orderId);
-    res.json({success:false,message:"unpaid"})
-  }
-} catch (error) {
-      res.json({success:false,message:"error"})
+};
 
-}
-}
-export { orderPlace , verifyOrder};
+const listOrder = async (req, res) => {
+  try {
+    const userId = req.user;
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ success: false, message: "unauthorize user" });
+    }
+    const orders = await orderModel.find({ userId: userId });
+    if (orders.length === 0) {
+      return res.json({ success: true, data: [], message: "No orders found" });
+    }
+
+    res.json({
+      success: true,
+      data: orders,
+      message: "orders fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// 📦 Get all orders (Admin only)
+const adminOrdersGet = async (req, res) => {
+  try {
+    const orders = await orderModel.find({});
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Error fetching admin orders:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders",
+    });
+  }
+};
+
+const updateorderstatus = async (req, res) => {
+  try {
+    const { orderid, status } = req.body;
+
+    if (!orderid || !status) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Order ID and status are required" });
+    }
+
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderid,
+      { status },
+      { new: true, runValidators: true } 
+    );
+
+    if (!updatedOrder) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
+    }
+
+    res.status(200).json({ success: true, data: updatedOrder });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export {
+  orderPlace,
+  verifyOrder,
+  listOrder,
+  adminOrdersGet,
+  updateorderstatus,
+};
