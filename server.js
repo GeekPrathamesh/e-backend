@@ -11,7 +11,7 @@ import { orderRouter } from "./routes/orderRoutes.js";
 
 //app config
 const app=express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 
 //database connection
@@ -34,7 +34,7 @@ app.use("/api/order",orderRouter)
 app.use("/images",express.static("uploads"))
 
 app.listen(port, () => {
-  console.log(`Example app listening on port http://localhost:${port}`)
+  console.log(`Example app listening on port ${port}`)
 })
 
 
